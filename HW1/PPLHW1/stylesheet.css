@@ -1,0 +1,8 @@
+node {
+    size: 16px, 16px;
+    fill-color: #add8e6;
+    stroke-mode: plain;
+    text-mode: normal;
+    text-alignment: above;
+    text-size: 12;
+}
