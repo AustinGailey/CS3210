@@ -1,4 +1,4 @@
-name := "PPLHW1"
+name := "HW1"
 
 version := "0.1"
 
