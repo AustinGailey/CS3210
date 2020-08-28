@@ -29,6 +29,8 @@ object PLGraph {
       while(sc.hasNext()){
         addToGraph(sc.nextLine())
       }
+    }catch{
+      case ex: Exception => 
     }
     graph.display()
   }
