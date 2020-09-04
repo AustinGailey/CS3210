@@ -1,19 +1,22 @@
+import LexicalAnalyzer.WORD_TO_TOKEN
+
 import scala.io.Source
 
 /*
  * CS3210 - Principles of Programming Languages - Fall 2020
  * Instructor: Thyago Mota
- * Description: Activity 05 - Lexical Analyzer
+ * Description: Homework 03 - Lexical Analyzer
  */
 
 /*
-expression = expression ( ´+´ | ´-´ ) term | term
-term = term ( ´*´ | ´/´ ) factor | factor
-factor = identifier | literal
-identifier = ´a´ | ´b´ | ´c´ | ´d´ | ´e´ | ´f´ | ´g´ | ´h´ | ´i´ | ´j´ | ´k´ | ´l´ | ´m´
-| ´n´ | ´o´ | ´p´ | ´q´ | ´r´ | ´s´ | ´t´ | ´u´ | ´v´ | ´w´ | ´x´ | ´y´ | ´z´
-literal = digit { digit }
-digit = ´0´ | ´1´ | ´2´ | ´3´ | ´4´ | ´5´ | ´6´ | ´7´ | ´8´ | ´9´
+stmt       = `declare` identifier { option }
+identifier = `$` letter { letter }
+letter     = `a` | `b` | … | `z` | `A` | `B` | … | `Z`
+option     = mode | scale | precision | base
+mode       = `real` | `complex`
+scale      = `fixed` | `floating`
+precision  = `single` | `double`
+base       = `binary` | `decimal`
  */
 
 class LexicalAnalyzer(private var source: String) extends Iterable[LexemeUnit] {
@@ -32,6 +35,8 @@ class LexicalAnalyzer(private var source: String) extends Iterable[LexemeUnit] {
       CharClass.BLANK
     else if (c == '+' || c == '-' || c == '*' || c == '/')
       CharClass.OPERATOR
+    else if (c == '(' || c == ')')
+      CharClass.DELIMITER
     else
       CharClass.OTHER
   }
@@ -68,46 +73,11 @@ class LexicalAnalyzer(private var source: String) extends Iterable[LexemeUnit] {
             var c = input(0)
             var charClass = getCharClass(c)
 
-            // TODO: recognize a single letter as an identifier
-            if (charClass == CharClass.LETTER) {
-              input = input.substring(1)
-              lexeme += c
-              return new LexemeUnit(lexeme, Token.IDENTIFIER)
-            }
+            // TODO: recognize identifiers
 
-            // TODO: recognize multiple digits as a literal
-            if (charClass == CharClass.DIGIT) {
-              input = input.substring(1)
-              lexeme += c
-              var noMoreDigits = false
-              while (!noMoreDigits) {
-                if (input.length == 0)
-                  noMoreDigits = true
-                else {
-                  c = input(0)
-                  charClass = getCharClass(c)
-                  if (charClass == CharClass.DIGIT) {
-                    input = input.substring(1)
-                    lexeme += c
-                  }
-                  else
-                    noMoreDigits = true
-                }
-              }
-              return new LexemeUnit(lexeme, Token.LITERAL)
-            }
 
-            // TODO: recognize operators
-            if (charClass == CharClass.OPERATOR) {
-              input = input.substring(1)
-              lexeme += c
-              c match {
-                case '+' => return new LexemeUnit(lexeme, Token.ADD_OP)
-                case '-' => return new LexemeUnit(lexeme, Token.SUB_OP)
-                case '*' => return new LexemeUnit(lexeme, Token.MUL_OP)
-                case '/' => return new LexemeUnit(lexeme, Token.DIV_OP)
-              }
-            }
+            // TODO: recognize reserved words
+
 
             // throw an exception if an unrecognizable symbol is found
             throw new Exception("Lexical Analyzer Error: unrecognizable symbol found!")
@@ -119,9 +89,20 @@ class LexicalAnalyzer(private var source: String) extends Iterable[LexemeUnit] {
 } // end LexicalAnalyzer class
 
 object LexicalAnalyzer {
-  val LETTERS = "abcdefghijklmnopqrstuvwxyz"
+  val LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
   val DIGITS  = "0123456789"
   val BLANKS  = " \n\t"
+  val WORD_TO_TOKEN = Map(
+    "declare"  -> Token.DECLARE,
+    "real"     -> Token.REAL,
+    "complex"  -> Token.COMPLEX,
+    "fixed"    -> Token.FIXED,
+    "floating" -> Token.FLOATING,
+    "single"   -> Token.SINGLE,
+    "double"   -> Token.DOUBLE,
+    "binary"   -> Token.BINARY,
+    "decimal"  -> Token.DECIMAL
+  )
 
   def main(args: Array[String]): Unit = {
     // check if source file was passed through the command-line
