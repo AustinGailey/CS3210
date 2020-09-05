@@ -37,6 +37,8 @@ class LexicalAnalyzer(private var source: String) extends Iterable[LexemeUnit] {
       CharClass.OPERATOR
     else if (c == '(' || c == ')')
       CharClass.DELIMITER
+    else if (c == '$')
+      CharClass.PUNCTUATOR
     else
       CharClass.OTHER
   }
@@ -74,10 +76,37 @@ class LexicalAnalyzer(private var source: String) extends Iterable[LexemeUnit] {
             var charClass = getCharClass(c)
 
             // TODO: recognize identifiers
-
+            if(charClass == CharClass.PUNCTUATOR){
+              input = input.substring(1)
+              lexeme += c
+              while(getCharClass(input(0))== CharClass.LETTER){
+                lexeme += input(0)
+                input = input.substring(1)
+                //System.out.println(input(0))
+              }
+              if(lexeme.length() > 1){
+                return new LexemeUnit(lexeme, Token.IDENTIFIER)
+              }
+            }
 
             // TODO: recognize reserved words
-
+            if(charClass == CharClass.LETTER){
+              input = input.substring(1)
+              lexeme += c
+              while(getCharClass(input(0)) == CharClass.LETTER){
+                lexeme += input(0)
+                input = input.substring(1)
+                //System.out.println(input(0))
+              }
+              try{
+                var token = WORD_TO_TOKEN.get(lexeme).get
+                if(token != null){
+                  return new LexemeUnit(lexeme, token)
+                }
+              }catch{
+                case e: Exception =>
+              }
+            }
 
             // throw an exception if an unrecognizable symbol is found
             throw new Exception("Lexical Analyzer Error: unrecognizable symbol found!")
