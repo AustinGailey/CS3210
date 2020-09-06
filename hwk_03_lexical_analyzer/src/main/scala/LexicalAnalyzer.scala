@@ -6,6 +6,7 @@ import scala.io.Source
  * CS3210 - Principles of Programming Languages - Fall 2020
  * Instructor: Thyago Mota
  * Description: Homework 03 - Lexical Analyzer
+ * Student: Austin Gailey
  */
 
 /*
@@ -75,7 +76,7 @@ class LexicalAnalyzer(private var source: String) extends Iterable[LexemeUnit] {
             var c = input(0)
             var charClass = getCharClass(c)
 
-            // TODO: recognize identifiers
+            //Recognize identifiers
             if(charClass == CharClass.PUNCTUATOR){
               input = input.substring(1)
               lexeme += c
@@ -89,7 +90,7 @@ class LexicalAnalyzer(private var source: String) extends Iterable[LexemeUnit] {
               }
             }
 
-            // TODO: recognize reserved words
+            // Recognize reserved words
             if(charClass == CharClass.LETTER){
               input = input.substring(1)
               lexeme += c
@@ -107,7 +108,6 @@ class LexicalAnalyzer(private var source: String) extends Iterable[LexemeUnit] {
                 case e: Exception =>
               }
             }
-
             // throw an exception if an unrecognizable symbol is found
             throw new Exception("Lexical Analyzer Error: unrecognizable symbol found!")
           }
