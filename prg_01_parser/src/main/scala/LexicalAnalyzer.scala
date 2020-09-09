@@ -1,23 +1,12 @@
-import LexicalAnalyzer.WORD_TO_TOKEN
+import LexicalAnalyzer.{OPERATOR_PUNCTUATOR_TO_TOKEN, WORD_TO_TOKEN}
 
 import scala.io.Source
 
 /*
  * CS3210 - Principles of Programming Languages - Fall 2020
  * Instructor: Thyago Mota
- * Description: Homework 03 - Lexical Analyzer
- * Student: Austin Gailey
- */
-
-/*
-stmt       = `declare` identifier { option }
-identifier = `$` letter { letter }
-letter     = `a` | `b` | … | `z` | `A` | `B` | … | `Z`
-option     = mode | scale | precision | base
-mode       = `real` | `complex`
-scale      = `fixed` | `floating`
-precision  = `single` | `double`
-base       = `binary` | `decimal`
+ * Description: Prg01 - Lexical Analyzer
+ * Student(s) Name(s):
  */
 
 class LexicalAnalyzer(private var source: String) extends Iterable[LexemeUnit] {
@@ -34,12 +23,12 @@ class LexicalAnalyzer(private var source: String) extends Iterable[LexemeUnit] {
       CharClass.DIGIT
     else if (LexicalAnalyzer.BLANKS.contains(c))
       CharClass.BLANK
-    else if (c == '+' || c == '-' || c == '*' || c == '/')
+    else if (c == '+' || c == '-' || c == '*' || c == '/' ||  c == '>' || c == '<' || c == '=')
       CharClass.OPERATOR
+    else if (c == '.' || c == ',' || c == ';' || c == ':')
+      CharClass.PUNCTUATOR
     else if (c == '(' || c == ')')
       CharClass.DELIMITER
-    else if (c == '$')
-      CharClass.PUNCTUATOR
     else
       CharClass.OTHER
   }
@@ -76,38 +65,8 @@ class LexicalAnalyzer(private var source: String) extends Iterable[LexemeUnit] {
             var c = input(0)
             var charClass = getCharClass(c)
 
-            //Recognize identifiers
-            if(charClass == CharClass.PUNCTUATOR){
-              input = input.substring(1)
-              lexeme += c
-              while(getCharClass(input(0))== CharClass.LETTER){
-                lexeme += input(0)
-                input = input.substring(1)
-                //System.out.println(input(0))
-              }
-              if(lexeme.length() > 1){
-                return new LexemeUnit(lexeme, Token.IDENTIFIER)
-              }
-            }
+            // TODO: finish the code
 
-            // Recognize reserved words
-            if(charClass == CharClass.LETTER){
-              input = input.substring(1)
-              lexeme += c
-              while(getCharClass(input(0)) == CharClass.LETTER){
-                lexeme += input(0)
-                input = input.substring(1)
-                //System.out.println(input(0))
-              }
-              try{
-                var token = WORD_TO_TOKEN(lexeme)
-                if(token != null){
-                  return new LexemeUnit(lexeme, token)
-                }
-              }catch{
-                case e: Exception =>
-              }
-            }
             // throw an exception if an unrecognizable symbol is found
             throw new Exception("Lexical Analyzer Error: unrecognizable symbol found!")
           }
@@ -121,17 +80,6 @@ object LexicalAnalyzer {
   val LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
   val DIGITS  = "0123456789"
   val BLANKS  = " \n\t"
-  val WORD_TO_TOKEN = Map(
-    "declare"  -> Token.DECLARE,
-    "real"     -> Token.REAL,
-    "complex"  -> Token.COMPLEX,
-    "fixed"    -> Token.FIXED,
-    "floating" -> Token.FLOATING,
-    "single"   -> Token.SINGLE,
-    "double"   -> Token.DOUBLE,
-    "binary"   -> Token.BINARY,
-    "decimal"  -> Token.DECIMAL
-  )
 
   def main(args: Array[String]): Unit = {
     // check if source file was passed through the command-line

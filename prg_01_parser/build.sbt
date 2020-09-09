@@ -1,4 +1,4 @@
-name := "hwks_03_lexical_analyzer"
+name := "prg_01_parser"
 
 version := "0.1"
 
