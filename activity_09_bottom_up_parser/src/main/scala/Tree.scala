@@ -1,8 +1,7 @@
 /*
  * CS3210 - Principles of Programming Languages - Fall 2020
  * Instructor: Thyago Mota
- * Description: Prg01 - Tree
- * Student(s) Name(s): Austin Gailey
+ * Description: Activity 09 - Tree
  */
 
 import scala.collection.mutable.ArrayBuffer

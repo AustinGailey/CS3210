@@ -1,16 +1,26 @@
 import SyntaxAnalyzer.{GRAMMAR_FILENAME, SLR_TABLE_FILENAME}
+import Token.Value
 
 import scala.collection.mutable.ArrayBuffer
-// PrintWriter
-import java.io._
 
 /*
  * CS3210 - Principles of Programming Languages - Fall 2020
  * Instructor: Thyago Mota
- * Description: prg_01_parser
- * Student: Austin Gailey
+ * Description: Activity 09 - Syntax Analyzer
  */
 
+/*
+expression  = term expression'
+expression' = ( ´+´  | ´-´ ) term expression' | epsilon
+term        = factor term'
+term'       = ( ´*´ | ´/´ ) factor term' | epsilon
+factor      = identifier | literal | ´(´ expression ´)´
+identifier  = letter { ( letter | digit ) }
+letter      = ´a´ | ´b´ | ´c´ | ´d´ | ´e´ | ´f´ | ´g´ | ´h´ | ´i´ | ´j´ | ´k´ | ´l´ | ´m´
+| ´n´ | ´o´ | ´p´ | ´q´ | ´r´ | ´s´ | ´t´ | ´u´ | ´v´ | ´w´ | ´x´ | ´y´ | ´z´
+literal     = digit { digit }
+digit       = ´0´ | ´1´ | ´2´ | ´3´ | ´4´ | ´5´ | ´6´ | ´7´ | ´8´ | ´9´
+ */
 
 class SyntaxAnalyzer(private var source: String) {
 
@@ -18,8 +28,7 @@ class SyntaxAnalyzer(private var source: String) {
   private var lexemeUnit: LexemeUnit = null
   private val grammar = new Grammar(GRAMMAR_FILENAME)
   private val slrTable = new SLRTable(SLR_TABLE_FILENAME)
-  //System.out.println(slrTable.toString())
-
+  //System.out.println("slrTable" + slrTable.toString())
   private def getLexemeUnit() = {
     if (lexemeUnit == null)
       lexemeUnit = it.next()
@@ -28,7 +37,7 @@ class SyntaxAnalyzer(private var source: String) {
   }
 
   def parse(): Tree = {
-  
+
     // TODO: create a stack of trees
     val trees: ArrayBuffer[Tree] = new ArrayBuffer[Tree]
 
@@ -36,6 +45,7 @@ class SyntaxAnalyzer(private var source: String) {
     val stack: ArrayBuffer[String] = new ArrayBuffer[String]
     stack.append("0")
 
+    // TODO: main parser loop
     while (true) {
 
       if (SyntaxAnalyzer.DEBUG)
@@ -51,19 +61,17 @@ class SyntaxAnalyzer(private var source: String) {
 
       // TODO: get current token
       val token = lexemeUnit.getToken()
-      if(SyntaxAnalyzer.DEBUG)
-        println("token: " + token)
-        val pw = new PrintWriter(new File("slrTableToStringOutput.txt" ))
-        pw.write(slrTable.toString())
-        pw.close
+
       // TODO: get action
       val action = slrTable.getAction(state, token)
       if (SyntaxAnalyzer.DEBUG)
         println("action: " + action)
+
       // TODO: if action is undefined, throw an exception
       if (action.length == 0)
-        throw new Exception("Syntax Analyzer Error: " + trees.last.branches+" expected!")
+        throw new Exception("Syntax Analyzer Error!")
 
+      // TODO: implement the "shift" operation if the action's prefix is "s"
       if (action(0) == 's') {
 
         // TODO: update the parser's stack
@@ -124,45 +132,6 @@ class SyntaxAnalyzer(private var source: String) {
     }
     throw new Exception("Syntax Analyzer Error!")
   }
-
-    def getTokenName(tokenValue: Int):String = {
-    tokenValue match{
-      case 0 => return "EOF"
-      case 1 => return "identifier"
-      case 2 => return "int_literal"
-      case 3 => return "program"
-      case 4 => return "var"
-      case 5 => return "type"
-      case 6 => return "boolean_type"
-      case 7 => return "begin"
-      case 8 => return "end"
-      case 9 => return "read"
-      case 10 => return "write"
-      case 11 => return "if"
-      case 12 => return "then"
-      case 13 => return "else"
-      case 14 => return "while"
-      case 15 => return "do"
-      case 16 => return "bool_literal"
-      case 17 => return ""
-      case 18 => return "add_op"
-      case 19 => return "sub_op"
-      case 20 => return "mul_op"
-      case 21 => return "div_op"
-      case 22 => return "greaterthan_op"
-      case 23 => return "lesserthan_op"
-      case 24 => return "equals_op"
-      case 25 => return "lesser_equals_op"
-      case 26 => return "greater_equals_op"
-      case 27 => return "open_par"
-      case 28 => return "close_par"
-      case 29 => return "period_punc"
-      case 30 => return "comma_punc"
-      case 31 => return "semicolon_punc"
-      case 32 => return "colon_punc"
-      case 33 => return "assign_punc"
-    }
-  }
 }
 
 object SyntaxAnalyzer {
@@ -170,7 +139,17 @@ object SyntaxAnalyzer {
   val GRAMMAR_FILENAME   = "grammar.txt"
   val SLR_TABLE_FILENAME = "slr_table.csv"
 
-  val DEBUG = true
+  val TOKEN_EOF        = 0
+  val TOKEN_ADD_OP     = 1
+  val TOKEN_SUB_OP     = 2
+  val TOKEN_MUL_OP     = 3
+  val TOKEN_DIV_OP     = 4
+  val TOKEN_IDENTIFIER = 5
+  val TOKEN_LITERAL    = 6
+  val TOKEN_OPEN_PAR   = 7
+  val TOKEN_CLOSE_PAR  = 8
+
+  val DEBUG = false
 
   def main(args: Array[String]): Unit = {
     // check if source file was passed through the command-line

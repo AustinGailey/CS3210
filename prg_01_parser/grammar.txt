@@ -1,0 +1,45 @@
+program -> 'program' identifier body '.'
+body -> block
+body -> var_sct block
+var_sct -> 'var' var_dcl var_dcl'
+var_sct -> 'var' var_dcl
+var_dcl -> identifier' ':' type
+var_dcl' -> ';' var_dcl var_dcl'
+var_dcl' -> ';' var_dcl
+identifier' -> identifier identifier'
+identifier' -> identifier
+block -> 'begin' stmt stmt' 'end'
+block -> 'begin' stmt 'end'
+stmt -> assgm_stmt
+stmt -> read_stmt
+stmt -> write_stmt
+stmt -> if_stmt
+stmt -> while_stmt
+stmt -> block
+stmt' -> ';' stmt stmt'
+stmt' -> ';' stmt
+assgm_stmt -> identifier ':=' expr
+read_stmt -> 'read' identifier
+write_stmt -> 'write' identifier
+write_stmt -> 'write' literal
+if_stmt -> 'if' bool_expr 'then' stmt else_stmt
+if_stmt -> 'if' bool_expr 'then' stmt ';'
+else_stmt -> 'else' stmt
+while_stmt -> 'while' bool_expr 'do' stmt
+expr -> arithm_expr
+expr -> bool_expr
+arithm_expr -> arithm_expr '+' term
+arithm_expr -> arithm_expr '-' term
+arithm_expr -> term
+term -> term '*' factor
+term -> factor
+factor -> identifier
+factor -> int_literal
+literal -> int_literal
+literal -> bool_literal
+bool_expr -> bool_literal
+bool_expr -> arithm_expr '>' arithm_expr
+bool_expr -> arithm_expr '>=' arithm_expr
+bool_expr -> arithm_expr '=' arithm_expr
+bool_expr -> arithm_expr '<=' arithm_expr
+bool_expr -> arithm_expr '<' arithm_expr

@@ -7,12 +7,12 @@ program Source9
 
   begin
 
-    read s;
-    i := 1;
+    read s
+    i := 1
     acc := 0;
     while i <= s
     begin
-        acc := acc + i;
+        acc := acc + i
         i := i + 1
     end
 
