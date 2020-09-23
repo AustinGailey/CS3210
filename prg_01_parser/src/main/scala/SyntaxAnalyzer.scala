@@ -62,7 +62,7 @@ class SyntaxAnalyzer(private var source: String) {
         println("action: " + action)
       // TODO: if action is undefined, throw an exception
       if (action.length == 0)
-        throw new Exception("Syntax Analyzer Error: " + trees.last.branches+" expected!")
+        throw new Exception("Syntax Analyzer Error: " + getFollows(state) +" expected!")
 
       if (action(0) == 's') {
 
@@ -125,7 +125,7 @@ class SyntaxAnalyzer(private var source: String) {
     throw new Exception("Syntax Analyzer Error!")
   }
 
-    def getTokenName(tokenValue: Int):String = {
+  def getTokenName(tokenValue: Int):String = {
     tokenValue match{
       case 0 => return "EOF"
       case 1 => return "identifier"
@@ -163,6 +163,25 @@ class SyntaxAnalyzer(private var source: String) {
       case 33 => return "assign_punc"
     }
   }
+
+  def getFollows(state: Integer):String = {
+    //for each goto in the state, return the potential action
+    var follows:String = ""
+    for(i <- 0 until 34){
+      try{
+        if(slrTable.getAction(state,i) != ""){
+          if(follows == ""){
+            follows += getTokenName(i)
+          }
+          follows += ", " + getTokenName(i)
+        }
+      }catch{
+        case e: Exception =>
+      }
+      
+    }
+    return follows
+  } 
 }
 
 object SyntaxAnalyzer {
