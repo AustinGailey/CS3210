@@ -1,6 +1,6 @@
 -- CS3210 - Principles of Programming Languages - Fall 2020
 -- Homework 08 - A Simple Phonebook Application
--- Student Name∷
+-- Student Name∷ Austin Gailey
 
 type Entry = (Person, Number)
 type Person = String
