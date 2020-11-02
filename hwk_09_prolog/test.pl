@@ -1,0 +1,2 @@
+mountain(rocky).
+mountain(sawtooth).
