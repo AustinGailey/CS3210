@@ -32,7 +32,6 @@ var wg sync.WaitGroup
 func (ps *Pubsub) Subscribe(topic string) <-chan string {
 	ps.mu.Lock()
 	defer ps.mu.Unlock()
-
 	ch := make(chan string, 1)
 	ps.subs[topic] = append(ps.subs[topic], ch)
 	return ch
@@ -52,72 +51,56 @@ func (ps *Pubsub) Publish(topic string, msg string) {
 	}
 }
 
-func (ps *Pubsub) Close() {
-	ps.mu.Lock()
-	if !ps.closed {
-		ps.closed = true
-		for _, subs := range ps.subs {
-			for _, ch := range subs {
-				close(ch)
-			}
-		}
-	}
-	ps.mu.Unlock()
-}
-
 // TODOd sends messages taken from a given array of message, one at a time and at random intervals, to all topic subscribers
 func publisher(ps *Pubsub, topic string, msgs []string) {
+	time.Sleep(10 * time.Second)
 	for _, msg := range msgs {
-		time.Sleep(time.Duration(rand.Intn(3)) * time.Second)
+		time.Sleep(time.Duration(rand.Intn(5)) * time.Second)
 		//fmt.Println(msg)
 		ps.Publish(topic, msg)
 	}
 	wg.Done()
 }
 
-// TODO: reads and displays all messages received from a particular topic
+// TODOd: reads and displays all messages received from a particular topic
 func subscriber(ps *Pubsub, name string, topic string) {
-	ps.mu.RLock()
+	ch := ps.Subscribe(topic)
 	for {
-		if msg, ok := <-ps.subs[topic][0]; ok {
-			//msg := <-ps.subs[topic][0]
+		if msg, ok := <-ch; ok {
 			fmt.Println(name + " Received: " + msg)
 		} else {
 			break
 		}
 	}
-	ps.mu.RUnlock()
-	wg.Done()
 }
 
 func main() {
 
 	// TODOd: create the ps struct
 	ps := NewPubsub()
-	ps.Subscribe("cars")
-	ps.Subscribe("games")
 
 	// TODOd: create the arrays of messages to be sent on each topic
 	carMessages := []string{
-		"car 1 fact",
-		"car 2 fact",
-		"car 3 fact"}
-
+		"Cars come in many different makes and models.",
+		"The Subaru Outback is the best selling car in Colorado.",
+		"Tesla cars are capable of full self driving."}
 	gameMessages := []string{
-		"game 1 fact",
-		"game 2 fact",
-		"game 3 fact"}
+		"The videogame industry is worth $90 billion.",
+		"Cyberpunk 2077 is the most anticipated game of 2020.",
+		"Fortnite changed the way companies generated in app purchases."}
 
 	// TODOd: set wait group to 2 (# of publishers)
 	wg.Add(2)
 	// TODOd: create the publisher goroutines
+	fmt.Println("Giving subscribers a chance to subscribe.")
+	fmt.Println("Please wait 10 seconds for messages to start arriving...")
 	go publisher(ps, "cars", carMessages)
 	go publisher(ps, "games", gameMessages)
 
-	// TODO: create the subscriber goroutines
+	// TODOd: create the subscriber goroutines
 	go subscriber(ps, "John", "games")
 	go subscriber(ps, "Mary", "cars")
 	go subscriber(ps, "Mary", "games")
-	// TODO: wait for all publishers to be done
+	// TODOd: wait for all publishers to be done
 	wg.Wait()
 }
